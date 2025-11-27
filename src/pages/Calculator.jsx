@@ -1,178 +1,186 @@
-import React, { useState } from "react";
-import { Pie } from "react-chartjs-2";
-import { Chart, ArcElement, Tooltip, Legend } from "chart.js";
-Chart.register(ArcElement, Tooltip, Legend);
+import React from 'react';
+import { useNavigate } from 'react-router-dom';
+import { 
+  FaCalculator, 
+  FaChartLine, 
+  FaCoins, 
+  FaPiggyBank, 
+  FaGraduationCap,
+  FaArrowRight,
+  FaMoneyBillWave,
+  FaChartPie,
+  FaClock,
+  FaRocket
+} from 'react-icons/fa';
+import HeaderNav from '../components/HeaderNav';
+import Footer from '../components/Footer';
+import coverImage from '../assets/cover.jpg';
 
-function calculateSIP({
-  amount,
-  frequency,
-  years,
-  rate,
-  inflation,
-  withdrawals,
-  limitedPeriod,
-  lumpsum,
-  topup,
-}) {
-  // Basic SIP calculation with annual compounding
-  let invested = 0;
-  let value = 0;
-  let details = [];
-  let annualRate = rate / 100;
-  let periods = years * (frequency === "Monthly" ? 12 : 1);
-  let periodRate = frequency === "Monthly" ? annualRate / 12 : annualRate;
-  let periodAmount = amount;
-  let totalWithdrawn = 0;
+const Calculator = () => {
+  const navigate = useNavigate();
 
-  for (let y = 1; y <= years; y++) {
-    let yearInvested = 0;
-    let yearValue = value;
-    for (
-      let p = 0;
-      p < (frequency === "Monthly" ? 12 : 1);
-      p++
-    ) {
-      if (!limitedPeriod || y <= limitedPeriod) {
-        yearInvested += periodAmount;
-        value += periodAmount;
-      }
-      value *= 1 + periodRate;
+  const calculators = [
+    {
+      id: 'sip',
+      title: 'SIP Calculator',
+      description: 'Calculate your Systematic Investment Plan returns and plan your monthly investments',
+      icon: FaChartLine,
+      color: 'from-green-500 to-emerald-600',
+      bgColor: 'bg-green-50',
+      iconColor: 'text-green-600',
+      path: '/calculator/sip'
+    },
+    {
+      id: 'lumpsum',
+      title: 'Lumpsum Calculator',
+      description: 'Calculate returns on your one-time investment and plan your financial goals',
+      icon: FaCoins,
+      color: 'from-blue-500 to-indigo-600',
+      bgColor: 'bg-blue-50',
+      iconColor: 'text-blue-600',
+      path: '/calculator/lumpsum'
+    },
+    {
+      id: 'retirement',
+      title: 'Retirement Planning',
+      description: 'Plan your retirement corpus and calculate how much you need to save',
+      icon: FaPiggyBank,
+      color: 'from-purple-500 to-pink-600',
+      bgColor: 'bg-purple-50',
+      iconColor: 'text-purple-600',
+      path: '/calculator/retirement-planning'
+    },
+    {
+      id: 'education',
+      title: 'Children Education',
+      description: 'Calculate the future cost of education and plan your savings accordingly',
+      icon: FaGraduationCap,
+      color: 'from-orange-500 to-red-600',
+      bgColor: 'bg-orange-50',
+      iconColor: 'text-orange-600',
+      path: '/calculator/children-education'
     }
-    // Withdrawals
-    let withdrawal = withdrawals[y - 1] || 0;
-    value -= withdrawal;
-    totalWithdrawn += withdrawal;
-
-    details.push({
-      year: y,
-      invested: (y * periodAmount * (frequency === "Monthly" ? 12 : 1)) + (lumpsum || 0),
-      withdrawals: withdrawal,
-      value: Math.round(value),
-      profit: Math.round(value - (y * periodAmount * (frequency === "Monthly" ? 12 : 1)) - (lumpsum || 0)),
-    });
-  }
-
-  invested = years * periodAmount * (frequency === "Monthly" ? 12 : 1) + (lumpsum || 0);
-  return {
-    invested,
-    futureValue: Math.round(value),
-    totalWithdrawn,
-    returns: Math.round(value - invested),
-    details,
-  };
-}
-
-export default function Calculator() {
-  const [amount, setAmount] = useState(10000);
-  const [frequency, setFrequency] = useState("Monthly");
-  const [years, setYears] = useState(20);
-  const [rate, setRate] = useState(12);
-  const [inflation, setInflation] = useState(0);
-  const [limitedPeriod, setLimitedPeriod] = useState("");
-  const [lumpsum, setLumpsum] = useState(0);
-  const [topup, setTopup] = useState(0);
-  const [withdrawals, setWithdrawals] = useState([]);
-  const [showDetails, setShowDetails] = useState(false);
-
-  const result = calculateSIP({
-    amount,
-    frequency,
-    years,
-    rate,
-    inflation,
-    withdrawals,
-    limitedPeriod: limitedPeriod ? Number(limitedPeriod) : null,
-    lumpsum: lumpsum ? Number(lumpsum) : 0,
-    topup: topup ? Number(topup) : 0,
-  });
-
-  const pieData = {
-    labels: ["Invested Amount", "Est. Returns"],
-    datasets: [
-      {
-        data: [result.invested, result.returns],
-        backgroundColor: ["#16a34a", "#fde047"],
-        hoverOffset: 4,
-      },
-    ],
-  };
+  ];
 
   return (
-    <div className="max-w-3xl mx-auto bg-white rounded-xl shadow-lg p-8 mt-10">
-      <h2 className="text-2xl font-bold mb-6 text-green-700">Mutual Fund Calculator</h2>
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8">
-        <div>
-          <label className="block font-semibold mb-1">Investment Amount (₹)</label>
-          <input type="number" value={amount} onChange={e => setAmount(Number(e.target.value))} className="w-full border rounded px-3 py-2 mb-3" />
-          <label className="block font-semibold mb-1">Payment Frequency</label>
-          <select value={frequency} onChange={e => setFrequency(e.target.value)} className="w-full border rounded px-3 py-2 mb-3">
-            <option>Monthly</option>
-            <option>Annually</option>
-          </select>
-          <label className="block font-semibold mb-1">Investment Timing</label>
-          <select className="w-full border rounded px-3 py-2 mb-3" disabled>
-            <option>End of Period</option>
-          </select>
-          <label className="block font-semibold mb-1">Expected Annual Return (%)</label>
-          <input type="number" value={rate} onChange={e => setRate(Number(e.target.value))} className="w-full border rounded px-3 py-2 mb-3" />
-          <label className="block font-semibold mb-1">Total Investment Period (Years)</label>
-          <input type="number" value={years} onChange={e => setYears(Number(e.target.value))} className="w-full border rounded px-3 py-2 mb-3" />
-          <label className="block font-semibold mb-1">Limited SIP period</label>
-          <input type="number" value={limitedPeriod} onChange={e => setLimitedPeriod(e.target.value)} className="w-full border rounded px-3 py-2 mb-3" />
-          <label className="block font-semibold mb-1">Lumpsum</label>
-          <input type="number" value={lumpsum} onChange={e => setLumpsum(e.target.value)} className="w-full border rounded px-3 py-2 mb-3" />
-          <label className="block font-semibold mb-1">SIP Top-up</label>
-          <input type="number" value={topup} onChange={e => setTopup(e.target.value)} className="w-full border rounded px-3 py-2 mb-3" />
-          <label className="block font-semibold mb-1">Adjust for Inflation</label>
-          <input type="number" value={inflation} onChange={e => setInflation(Number(e.target.value))} className="w-full border rounded px-3 py-2 mb-3" />
-        </div>
-        <div className="flex flex-col items-center justify-center">
-          <Pie data={pieData} />
-          <div className="mt-6">
-            <div className="font-semibold text-lg text-gray-700">Invested Amount</div>
-            <div className="text-2xl font-bold text-green-700">₹{result.invested.toLocaleString()}</div>
-            <div className="font-semibold text-lg text-gray-700 mt-2">Future Value</div>
-            <div className="text-2xl font-bold text-yellow-500">₹{result.futureValue.toLocaleString()}</div>
-            <div className="font-semibold text-lg text-gray-700 mt-2">Total Withdrawn</div>
-            <div className="text-2xl font-bold text-red-500">₹{result.totalWithdrawn.toLocaleString()}</div>
-            <div className="font-semibold text-lg text-gray-700 mt-2">Est. Returns</div>
-            <div className="text-2xl font-bold text-green-700">₹{result.returns.toLocaleString()}</div>
+    <div className="min-h-screen bg-gray-50">
+      <HeaderNav />
+
+      {/* Hero Section */}
+      <section className="relative py-24 overflow-hidden" style={{ backgroundImage: `url(${coverImage})`, backgroundSize: 'cover', backgroundPosition: 'center' }}>
+        <div className="absolute inset-0 bg-gradient-to-r from-black/70 to-black/40"></div>
+        <div className="absolute inset-0 bg-gradient-to-b from-transparent to-black/30"></div>
+        <div className="relative z-10 container mx-auto px-4">
+          <div className="text-center text-white max-w-4xl mx-auto">
+            <h1 className="text-5xl md:text-7xl font-bold mb-6 bg-gradient-to-r from-white to-green-200 bg-clip-text text-transparent">
+              Calculator
+            </h1>
+            <p className="text-lg md:text-xl text-gray-200 mb-8 leading-relaxed">
+              Calculate your financial goals and plan your investments accordingly
+            </p>
+            <nav className="flex flex-wrap justify-center items-center space-x-2 md:space-x-3 text-sm md:text-base bg-white/10 backdrop-blur-sm rounded-full px-4 md:px-6 py-2 md:py-3 inline-flex">
+              <a href="/" className="hover:text-green-300 transition-colors">Home</a>
+              <span className="text-gray-400">/</span>
+              <a href="/services" className="hover:text-green-300 transition-colors">Services</a>
+              <span className="text-gray-400">/</span>
+              <span className="text-green-300 font-medium">Calculator</span>
+            </nav>
           </div>
         </div>
-      </div>
-      <button
-        className="bg-green-700 text-white px-6 py-2 rounded-full font-bold hover:bg-green-900 transition mb-4"
-        onClick={() => setShowDetails(!showDetails)}
-      >
-        {showDetails ? "Hide Details" : "Show Details"}
-      </button>
-      {showDetails && (
-        <div className="overflow-x-auto">
-          <table className="min-w-full border mt-4">
-            <thead>
-              <tr className="bg-green-100">
-                <th className="px-2 py-1 border">YEAR</th>
-                <th className="px-2 py-1 border">INVESTED</th>
-                <th className="px-2 py-1 border">WITHDRAWALS</th>
-                <th className="px-2 py-1 border">VALUE</th>
-                <th className="px-2 py-1 border">PROFIT/(LOSS)</th>
-              </tr>
-            </thead>
-            <tbody>
-              {result.details.map((row) => (
-                <tr key={row.year} className="text-center">
-                  <td className="border px-2 py-1">{row.year}</td>
-                  <td className="border px-2 py-1">₹{row.invested.toLocaleString()}</td>
-                  <td className="border px-2 py-1">₹{row.withdrawals.toLocaleString()}</td>
-                  <td className="border px-2 py-1">₹{row.value.toLocaleString()}</td>
-                  <td className="border px-2 py-1">₹{row.profit.toLocaleString()}</td>
-                </tr>
-              ))}
-            </tbody>
-          </table>
+      </section>  
+
+      {/* Calculators Grid */}
+      <section className="py-16 bg-white">
+        <div className="container mx-auto px-4">
+          <div className="text-center mb-12">
+            <h2 className="text-3xl md:text-4xl font-bold text-gray-800 mb-4">
+              Choose Your Calculator
+            </h2>
+            <p className="text-lg text-gray-600 max-w-2xl mx-auto">
+              Select from our range of financial calculators to plan your investments, retirement, and more
+            </p>
+          </div>
+
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-2 gap-8 max-w-5xl mx-auto">
+            {calculators.map((calculator) => {
+              const IconComponent = calculator.icon;
+              return (
+                <div
+                  key={calculator.id}
+                  onClick={() => navigate(calculator.path)}
+                  className={`${calculator.bgColor} rounded-2xl p-8 cursor-pointer transform transition-all duration-300 hover:scale-105 hover:shadow-2xl group`}
+                >
+                  <div className="flex items-start justify-between mb-6">
+                    <div className={`${calculator.iconColor} bg-white rounded-xl p-4 group-hover:scale-110 transition-transform duration-300`}>
+                      <IconComponent className="text-3xl" />
+                    </div>
+                    <FaArrowRight className={`${calculator.iconColor} text-xl opacity-0 group-hover:opacity-100 transition-opacity duration-300`} />
+                  </div>
+                  
+                  <h3 className="text-2xl font-bold text-gray-800 mb-3 group-hover:text-[#53755d] transition-colors">
+                    {calculator.title}
+                  </h3>
+                  
+                  <p className="text-gray-600 leading-relaxed mb-6">
+                    {calculator.description}
+                  </p>
+
+                  <div className={`bg-gradient-to-r ${calculator.color} text-white px-6 py-3 rounded-lg font-semibold text-center group-hover:shadow-lg transition-shadow duration-300`}>
+                    Calculate Now
+                  </div>
+                </div>
+              );
+            })}
+          </div>
         </div>
-      )}
+      </section>
+
+      {/* Features Section */}
+      <section className="py-16 bg-gradient-to-br from-gray-50 to-gray-100">
+        <div className="container mx-auto px-4">
+          <div className="text-center mb-12">
+            <h2 className="text-3xl md:text-4xl font-bold text-gray-800 mb-4">
+              Why Use Our Calculators?
+            </h2>
+          </div>
+
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-8 max-w-6xl mx-auto">
+            <div className="bg-white rounded-xl p-6 shadow-lg text-center">
+              <div className="bg-[#53755d] rounded-full p-4 w-16 h-16 mx-auto mb-4 flex items-center justify-center">
+                <FaMoneyBillWave className="text-white text-2xl" />
+              </div>
+              <h3 className="text-xl font-bold text-gray-800 mb-3">Accurate Calculations</h3>
+              <p className="text-gray-600">
+                Get precise financial projections based on industry-standard formulas
+              </p>
+            </div>
+
+            <div className="bg-white rounded-xl p-6 shadow-lg text-center">
+              <div className="bg-[#53755d] rounded-full p-4 w-16 h-16 mx-auto mb-4 flex items-center justify-center">
+                <FaChartPie className="text-white text-2xl" />
+              </div>
+              <h3 className="text-xl font-bold text-gray-800 mb-3">Visual Insights</h3>
+              <p className="text-gray-600">
+                Understand your investments better with charts and detailed breakdowns
+              </p>
+            </div>
+
+            <div className="bg-white rounded-xl p-6 shadow-lg text-center">
+              <div className="bg-[#53755d] rounded-full p-4 w-16 h-16 mx-auto mb-4 flex items-center justify-center">
+                <FaClock className="text-white text-2xl" />
+              </div>
+              <h3 className="text-xl font-bold text-gray-800 mb-3">Quick & Easy</h3>
+              <p className="text-gray-600">
+                Get instant results with our user-friendly and intuitive interface
+              </p>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <Footer />
     </div>
   );
-}
-export { calculateSIP };
+};
+
+export default Calculator;

@@ -1,0 +1,213 @@
+.card {
+  background-image:
+    linear-gradient(rgba(83, 117, 93, 0.3), rgba(83, 117, 93, 0.3)),
+    conic-gradient(
+      from var(--gradient-angle, 0turn),
+      #53755d 0%,
+      #a8cbb0 25%,
+      #ffffff 30%,
+      #a8cbb0 35%,
+      #53755d 50%,
+      #a8cbb0 75%,
+      #ffffff 80%,
+      #a8cbb0 85%,
+      #53755d 100%
+    );
+  background-clip: padding-box, border-box;
+  background-origin: padding-box, border-box;
+}
+
+@keyframes gradient-spin {
+  to {
+    --gradient-angle: 1turn;
+  }
+}
+
+.animate-gradient-spin {
+  animation: gradient-spin 3s linear infinite;
+}
+
+/* New Investment Tool Cards */
+.investment-tool-card {
+  clip-path: polygon(87% 13%, 77% 23%, 13% 76%, 24% 87%);
+  transition: all 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.investment-tool-card:hover {
+  transform: translateY(-8px) rotateY(5deg) rotateX(2deg);
+  box-shadow: 
+    0 25px 50px -12px rgba(0, 0, 0, 0.25),
+    0 0 0 1px rgba(255, 255, 255, 0.1);
+}
+
+/* Floating animation for hover elements */
+@keyframes float {
+  0%, 100% { transform: translateY(0px); }
+  50% { transform: translateY(-10px); }
+}
+
+.animate-float {
+  animation: float 3s ease-in-out infinite;
+}
+
+/* Glow effect */
+.card-glow {
+  box-shadow: 
+    0 0 20px rgba(83, 117, 93, 0.3),
+    0 0 40px rgba(83, 117, 93, 0.1),
+    0 0 60px rgba(83, 117, 93, 0.05);
+}
+
+/* Coming soon badge animation */
+@keyframes coming-soon-pulse {
+  0%, 100% { 
+    box-shadow: 0 0 0 0 rgba(251, 191, 36, 0.7);
+  }
+  50% { 
+    box-shadow: 0 0 0 10px rgba(251, 191, 36, 0);
+  }
+}
+
+.coming-soon-badge {
+  animation: coming-soon-pulse 2s infinite;
+}
+
+/* Official Resources Cards */
+.resource-card {
+  transition: all 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+  transform-style: preserve-3d;
+}
+
+.resource-card:hover {
+  transform: translateY(-8px) rotateY(2deg);
+  box-shadow: 
+    0 25px 50px -12px rgba(0, 0, 0, 0.15),
+    0 0 0 1px rgba(255, 255, 255, 0.1);
+}
+
+/* Card content animation */
+@keyframes slideInUp {
+  from {
+    opacity: 0;
+    transform: translateY(30px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.card-content {
+  animation: slideInUp 0.6s ease-out;
+}
+
+/* Feature list animation */
+@keyframes fadeInLeft {
+  from {
+    opacity: 0;
+    transform: translateX(-20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}
+
+.feature-item {
+  animation: fadeInLeft 0.4s ease-out;
+}
+
+.feature-item:nth-child(1) { animation-delay: 0.1s; }
+.feature-item:nth-child(2) { animation-delay: 0.2s; }
+.feature-item:nth-child(3) { animation-delay: 0.3s; }
+
+/* CTA button hover effect */
+.cta-button {
+  transition: all 0.3s ease;
+}
+
+.cta-button:hover {
+  transform: translateX(4px);
+}
+
+/* Background pattern animation */
+@keyframes backgroundShift {
+  0%, 100% {
+    transform: translateX(0) translateY(0);
+  }
+  50% {
+    transform: translateX(10px) translateY(-10px);
+  }
+}
+
+.background-pattern {
+  animation: backgroundShift 8s ease-in-out infinite;
+}
+
+/* Responsive adjustments */
+@media (max-width: 640px) {
+  .investment-tool-card {
+    clip-path: polygon(85% 15%, 75% 25%, 15% 75%, 25% 85%);
+  }
+  
+  .resource-card {
+    padding: 1.5rem;
+  }
+  
+  .resource-card h3 {
+    font-size: 1.5rem;
+  }
+}
+
+@media (max-width: 480px) {
+  .investment-tool-card {
+    clip-path: polygon(80% 20%, 70% 30%, 20% 70%, 30% 80%);
+  }
+  
+  .resource-card {
+    padding: 1rem;
+  }
+  
+  .resource-card h3 {
+    font-size: 1.25rem;
+  }
+}
+
+/* Professional gradient text effect */
+.gradient-text {
+  background: linear-gradient(135deg, #53755d 0%, #53755d 50%, #53755d/70 100%);
+  background-clip: text;
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-size: 200% 200%;
+  animation: gradientShift 3s ease-in-out infinite;
+}
+
+@keyframes gradientShift {
+  0%, 100% {
+    background-position: 0% 50%;
+  }
+  50% {
+    background-position: 100% 50%;
+  }
+}
+
+/* Card border glow on hover */
+.card-border-glow {
+  position: relative;
+}
+
+.card-border-glow::before {
+  content: '';
+  position: absolute;
+  inset: -2px;
+  background: linear-gradient(45deg, #53755d, #53755d/50, transparent, #53755d/50, #53755d);
+  border-radius: inherit;
+  z-index: -1;
+  opacity: 0;
+  transition: opacity 0.3s ease;
+}
+
+.card-border-glow:hover::before {
+  opacity: 1;
+} 

@@ -1,7 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { Pie } from "react-chartjs-2";
-import { Chart, ArcElement, Tooltip, Legend } from "chart.js";
-Chart.register(ArcElement, Tooltip, Legend);
+import { PieChart, Pie, Cell, ResponsiveContainer, Tooltip, Legend } from 'recharts';
 
 // SIP Top-up (Step-up) Calculator
 function calculateSIPTopUp({
@@ -534,7 +532,7 @@ export default function Calculator() {
           </table>
         </div>
       )}
-      <style jsx>{`
+      <style jsx="true">{`
         @keyframes slide-in {
           0% {
             opacity: 0;
